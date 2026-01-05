@@ -37,9 +37,9 @@ from statsmodels.nonparametric.smoothers_lowess import lowess
 # CONFIGURATION
 # ============================================================================
 
-PROCESSED_DATA_PATH = Path('../data/processed')
-OUTPUT_PATH = Path('../output/figures')
-TABLES_PATH = Path('../output/tables')
+PROCESSED_DATA_PATH = Path('../../data/processed')
+OUTPUT_PATH = Path('../../output/figures')
+TABLES_PATH = Path('../../output/tables')
 OUTPUT_PATH.mkdir(parents=True, exist_ok=True)
 TABLES_PATH.mkdir(parents=True, exist_ok=True)
 

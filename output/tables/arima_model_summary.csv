@@ -1,0 +1,2 @@
+variable,order,aic,bic,model_adequate,n_observations
+steps,"(0, 0, 0)",1805.0955068377687,1810.2032606209698,True,95
