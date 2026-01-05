@@ -1,0 +1,40 @@
+{
+  "total_days": 95,
+  "date_range": "2025-09-17 to 2025-12-20",
+  "columns": [
+    "steps",
+    "calories",
+    "distance",
+    "total_duration",
+    "sleep_score",
+    "sleep_deep_duration",
+    "sleep_light_duration",
+    "sleep_rem_duration",
+    "avg_stress",
+    "max_stress",
+    "min_stress",
+    "datetime",
+    "hour",
+    "day_of_week",
+    "is_weekend",
+    "week_of_year"
+  ],
+  "missing_after_imputation": {
+    "steps": 0,
+    "calories": 0,
+    "distance": 0,
+    "total_duration": 0,
+    "sleep_score": 0,
+    "sleep_deep_duration": 0,
+    "sleep_light_duration": 0,
+    "sleep_rem_duration": 0,
+    "avg_stress": 0,
+    "max_stress": 0,
+    "min_stress": 0,
+    "datetime": 0,
+    "hour": 0,
+    "day_of_week": 0,
+    "is_weekend": 0,
+    "week_of_year": 0
+  }
+}

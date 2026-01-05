@@ -1,0 +1,142 @@
+# AI Agent Reproduction Prompt
+
+Use the following prompt to reproduce this entire analysis project using an AI agent (such as Matrix Agent, Claude, ChatGPT, etc.).
+
+---
+
+## PROMPT START
+
+```
+I need you to perform a comprehensive Master's-level time series analysis on my Mi Band 7 fitness tracker data. The author for all documentation should be "Momeni Gilles".
+
+## Data Files Provided
+
+I have three CSV files exported from the Mi Fitness app:
+1. `*_hlth_center_aggregated_fitness_data.csv` - Daily aggregated health metrics (steps, sleep, heart rate, stress, SpO2)
+2. `*_hlth_center_fitness_data.csv` - Minute-level granular sensor data
+3. `*_user_fitness_data_records.csv` - Weekly summary records
+
+The CSV files have a 'value' column containing JSON strings that need to be parsed. Timestamps are in Unix format (seconds since epoch) and the timezone is UTC+8.
+
+## Project Requirements
+
+### 1. Project Structure
+Create an organized project folder with:
+- `data/raw/` - for original CSV files
+- `data/processed/` - for cleaned datasets
+- `code/python/` - numbered Python scripts (01_, 02_, 03_)
+- `code/R/` - R visualization scripts and RMarkdown report
+- `docs/` - data dictionary and methodology documentation
+- `output/figures/` - generated plots
+- `output/reports/` - final analysis reports
+
+### 2. Data Preprocessing (Python)
+Create a preprocessing script that:
+- Loads all three CSV files
+- Parses JSON from 'value' columns
+- Converts Unix timestamps to datetime (UTC+8)
+- Creates daily time series by aggregating/merging data
+- Handles missing values with statistical justification (document % missing)
+- Detects outliers using IQR method and applies winsorization
+- Engineers temporal features: day_of_week, is_weekend, week_of_year
+- Exports: daily_combined.csv, summary_statistics.csv, data_quality_report.json
+
+### 3. Exploratory Data Analysis (Python)
+Create an EDA script that:
+- Computes descriptive statistics (mean, std, min, max, quartiles)
+- Tests stationarity using:
+  - Augmented Dickey-Fuller (ADF) test
+  - KPSS test
+- Generates ACF and PACF plots (up to 40 lags)
+- Performs time series decomposition (STL and classical)
+- Analyzes correlation between variables
+- Exports all results and figures
+
+### 4. Time Series Modeling (Python)
+Create a modeling script that:
+- Uses auto-ARIMA or grid search to find optimal (p,d,q) parameters
+- Fits ARIMA model for non-seasonal patterns
+- Fits SARIMA model if weekly seasonality detected (period=7)
+- Performs diagnostic tests:
+  - Ljung-Box test for residual autocorrelation
+  - Normality test on residuals
+  - Residual plots
+- Validates with 80/20 train-test split
+- Calculates forecast accuracy metrics (RMSE, MAE, MAPE)
+- Generates forecast plots
+
+### 5. Visualizations (R with ggplot2)
+Create an R script that generates publication-quality plots:
+- Raw time series with trend line
+- Seasonal decomposition components
+- ACF/PACF correlograms
+- Model diagnostics (4-panel residual plot)
+- Forecast with confidence intervals
+- Use professional theme, proper labels, legends
+
+### 6. Academic Report (R Markdown)
+Create an RMarkdown file that compiles into a formal report with:
+- Title, author (Momeni Gilles), date
+- Abstract
+- Introduction (context, objectives)
+- Data Description (source, variables, time period)
+- Methodology (preprocessing, statistical tests, modeling approach)
+- Results (EDA findings, model parameters, diagnostics)
+- Discussion (interpretation, limitations)
+- Conclusion
+- References
+- Appendix with additional figures
+
+### 7. Documentation
+Create:
+- README.md - Project overview, structure, quick start
+- USAGE_GUIDE.md - Detailed step-by-step instructions
+- docs/data_dictionary.md - Variable definitions and descriptions
+- docs/methodology.md - Statistical methods explained
+- requirements.txt - Python dependencies
+
+### Technical Requirements
+- Python: pandas, numpy, scipy, statsmodels, matplotlib, seaborn
+- R: ggplot2, forecast, tseries, lubridate, dplyr, tidyr, patchwork
+- All scripts should have clear section headers and comments
+- Use numbered prefixes (01_, 02_) to indicate execution order
+- Handle errors gracefully with informative messages
+- Print progress updates during execution
+
+### Statistical Standards
+- Report p-values for all hypothesis tests
+- Use significance level α = 0.05
+- Include 95% confidence intervals where appropriate
+- Document any transformations applied (log, differencing)
+- Justify all methodological choices
+
+Please structure everything, create all files, and then execute the preprocessing script to verify the pipeline works.
+```
+
+## PROMPT END
+
+---
+
+## Notes for AI Agent Users
+
+1. **Attach your data files** when sending this prompt
+2. The AI will create the project structure and all code files
+3. After creation, ask the AI to run each script sequentially
+4. Request modifications if your data has different column names
+5. The analysis assumes at least 30+ days of data for reliable results
+
+---
+
+## Customization
+
+Modify the prompt above to:
+- Change the author name
+- Add/remove specific analyses
+- Change the modeling approach (e.g., add Prophet, LSTM)
+- Request different visualization styles
+- Include additional statistical tests
+
+---
+
+**Author:** Momeni Gilles  
+**Created:** January 2026

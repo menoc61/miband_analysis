@@ -1,0 +1,191 @@
+---
+title: "Advanced Time Series Analysis of Wearable Sensor Data"
+subtitle: "Mi Band 7 Physiological and Activity Metrics"
+author: "MSc Data Science"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+    code_folding: show
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(
+  echo = TRUE,
+  message = FALSE,
+  warning = FALSE,
+  fig.width = 12,
+  fig.height = 6,
+  dpi = 150
+)
+
+# Load required packages
+library(ggplot2)
+library(forecast)
+library(tseries)
+library(dplyr)
+library(lubridate)
+library(scales)
+library(knitr)
+library(kableExtra)
+```
+
+# 1. Introduction
+
+This R Markdown document presents the statistical visualizations for the time series analysis of Mi Band 7 wearable sensor data. The analysis follows MSc-level rigor in statistical inference and visualization design.
+
+## 1.1 Data Loading
+
+```{r data-loading}
+# Load processed data
+df <- read.csv("../data/processed/daily_combined.csv", stringsAsFactors = FALSE)
+df$date <- as.Date(df$date)
+
+# Display data summary
+cat("Data Summary\n")
+cat("============\n")
+cat(paste("Observations:", nrow(df), "\n"))
+cat(paste("Date range:", min(df$date), "to", max(df$date), "\n"))
+cat(paste("Variables:", paste(names(df), collapse = ", "), "\n"))
+```
+
+## 1.2 Descriptive Statistics
+
+```{r descriptive-stats}
+# Summary statistics for key variables
+key_vars <- c("steps", "calories", "distance")
+key_vars <- key_vars[key_vars %in% names(df)]
+
+if (length(key_vars) > 0) {
+  summary_stats <- df %>%
+    select(all_of(key_vars)) %>%
+    summary()
+  print(summary_stats)
+}
+```
+
+# 2. Time Series Visualizations
+
+## 2.1 Raw Time Series
+
+```{r time-series-plots, fig.height=8}
+if ("steps" %in% names(df)) {
+  ggplot(df, aes(x = date, y = steps)) +
+    geom_line(color = "#2E86AB", alpha = 0.7) +
+    geom_point(color = "#2E86AB", alpha = 0.4, size = 1) +
+    geom_smooth(method = "loess", span = 0.3, color = "#A23B72", fill = "#A23B72", alpha = 0.2) +
+    scale_x_date(date_labels = "%b %d", date_breaks = "2 weeks") +
+    scale_y_continuous(labels = comma) +
+    labs(
+      title = "Daily Step Count Over Time",
+      subtitle = "With LOESS smoothed trend line",
+      x = "Date",
+      y = "Steps"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(plot.title = element_text(face = "bold"))
+}
+```
+
+## 2.2 Weekly Patterns
+
+```{r weekly-pattern}
+if ("steps" %in% names(df)) {
+  df$day_of_week <- factor(weekdays(df$date, abbreviate = TRUE),
+                           levels = c("Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"))
+  
+  weekly_summary <- df %>%
+    group_by(day_of_week) %>%
+    summarise(
+      mean_steps = mean(steps, na.rm = TRUE),
+      se_steps = sd(steps, na.rm = TRUE) / sqrt(n()),
+      .groups = "drop"
+    )
+  
+  ggplot(weekly_summary, aes(x = day_of_week, y = mean_steps)) +
+    geom_col(fill = "#2E86AB", alpha = 0.8) +
+    geom_errorbar(aes(ymin = mean_steps - 1.96*se_steps, 
+                      ymax = mean_steps + 1.96*se_steps),
+                  width = 0.2, color = "grey30") +
+    scale_y_continuous(labels = comma, expand = c(0, 0)) +
+    labs(
+      title = "Weekly Activity Pattern",
+      subtitle = "Mean daily steps ± 95% CI",
+      x = "Day of Week",
+      y = "Mean Steps"
+    ) +
+    theme_minimal(base_size = 12) +
+    theme(plot.title = element_text(face = "bold"))
+}
+```
+
+# 3. Autocorrelation Analysis
+
+## 3.1 ACF and PACF
+
+```{r acf-pacf, fig.height=10}
+if ("steps" %in% names(df)) {
+  series <- na.omit(df$steps)
+  ts_data <- ts(series, frequency = 7)
+  
+  par(mfrow = c(2, 1))
+  Acf(ts_data, lag.max = 30, main = "Autocorrelation Function (ACF)")
+  Pacf(ts_data, lag.max = 30, main = "Partial Autocorrelation Function (PACF)")
+}
+```
+
+# 4. Time Series Decomposition
+
+## 4.1 STL Decomposition
+
+```{r stl-decomposition, fig.height=12}
+if ("steps" %in% names(df) && sum(!is.na(df$steps)) > 14) {
+  series <- na.omit(df$steps)
+  ts_data <- ts(series, frequency = 7)
+  
+  stl_result <- stl(ts_data, s.window = "periodic")
+  plot(stl_result, main = "STL Decomposition of Daily Steps")
+}
+```
+
+# 5. Stationarity Testing
+
+## 5.1 Unit Root Tests
+
+```{r stationarity-tests}
+if ("steps" %in% names(df)) {
+  series <- na.omit(df$steps)
+  
+  # ADF Test
+  adf_result <- adf.test(series)
+  cat("Augmented Dickey-Fuller Test\n")
+  cat("============================\n")
+  cat(paste("Test Statistic:", round(adf_result$statistic, 4), "\n"))
+  cat(paste("p-value:", round(adf_result$p.value, 4), "\n"))
+  cat(paste("Conclusion:", ifelse(adf_result$p.value < 0.05, "Stationary", "Non-stationary"), "\n\n"))
+  
+  # KPSS Test
+  kpss_result <- kpss.test(series)
+  cat("KPSS Test\n")
+  cat("=========\n")
+  cat(paste("Test Statistic:", round(kpss_result$statistic, 4), "\n"))
+  cat(paste("p-value:", round(kpss_result$p.value, 4), "\n"))
+  cat(paste("Conclusion:", ifelse(kpss_result$p.value > 0.05, "Stationary", "Non-stationary"), "\n"))
+}
+```
+
+# 6. Conclusion
+
+This analysis demonstrates the application of advanced time series methods to wearable sensor data. Key findings include:
+
+1. **Temporal Patterns**: Evidence of weekly cyclical patterns in activity metrics
+2. **Stationarity**: Assessment of series stationarity for appropriate modeling
+3. **Autocorrelation**: Significant temporal dependence requiring ARIMA-type models
+
+---
+
+*Generated with R version `r R.version.string`*
